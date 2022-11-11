@@ -1,0 +1,14 @@
+body {
+    background-color: #3aaaff;
+}
+
+.erro-input{
+    border: solid 1px red;
+}
+
+.erro{
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+}
