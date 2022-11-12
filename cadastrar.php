@@ -50,11 +50,41 @@ if(isset($_POST['nome_completo']) && isset($_POST['email']) && isset($_POST['sen
                 $id += 1 ;
                 $recupera_senha="";
                 $token="";
+                $codigo_confirmacao = uniqid();
                 $status = "novo";
                 $data_cadastro = date('d/m/Y');
-                $sql = $pdo->prepare("INSERT INTO usuarios VALUES (?,?,?,?,?,?,?,?)");
-                if($sql->execute(array($id,$nome,$email,$senha_cript,$recupera_senha,$token,$status, $data_cadastro))){
-                    header('location: Login.php?result=ok');
+                $sql = $pdo->prepare("INSERT INTO usuarios VALUES (?,?,?,?,?,?,?,?,?)");
+                if($sql->execute(array($id,$nome,$email,$senha_cript,$recupera_senha,$token,$codigo_confirmacao, $status, $data_cadastro))){
+                    //SE O MODO FOR LOCAL
+                    if($modo=="local"){
+                        header('location: Login.php?result=ok');
+                    }
+                    //SE O MODO FOR PRODUCAO
+                    if($modo=="producao"){
+                     
+                        //ENVIAR EMAIL PARA USUARIO
+                        $mail = new PHPMailer(true);
+
+                        try {
+                        
+                        //Recipients
+                        $mail->setFrom('sistema@emailsistema.com', 'Sistema de Login'); //QUEM ESTÁ MANDANDO O EMAIL
+                        $mail->addAddress($email, $nome); //PESSOA PARA QUEM VAI O EMAIL
+                        
+                        //Content
+                         $mail->isHTML(true);  //CORPO DO EMAIL COMO HTML
+                         $mail->Subject = 'Confirme seu cadastro!'; //TITULO DO EMAIL
+                         $mail->Body    = '<h1>Por favor confirme seu e-mail abaixo:</h1><br><br><a style="background:green; color:white; text-decoration:none; padding:20px; border-radius:5px;" href="'.$site.'login/confirmacao.php?cod_confirm='.$codigo_confirmacao.'">Confirmar E-mail</a>';
+                         
+                         $mail->send();
+                         header('location: obrigado.php');
+
+
+                        } catch (Exception $e) {
+                            echo "Houve um problema ao enviar -email de confirmação: {$mail->ErrorInfo}";
+                        }
+                       
+                    }
                 }
             }else{
                 //JÁ EXISTE USUARIO APRESENTAR ERRO
@@ -63,8 +93,6 @@ if(isset($_POST['nome_completo']) && isset($_POST['email']) && isset($_POST['sen
         }
 
     }
-
-
 
 }
 
