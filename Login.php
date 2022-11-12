@@ -12,7 +12,7 @@ if(isset($_POST['email']) && isset($_POST['senha']) && !empty($_POST['email']) &
     $usuario = $sql->fetch(PDO::FETCH_ASSOC);
     if($usuario){
         //verifica se o email foi confirmado 
-        if($usuario['status']=="confirmado"){
+        if($usuario/*['status']=="confirmado"*/){ //so abilitar quando ESTIVER EM UM SERVIDOR CONECTADO A UM BANCO DE DADOS
             //CRIAR UM TOKEN
             $token = sha1(uniqid().date('d-m-Y-H-i-s'));
 
